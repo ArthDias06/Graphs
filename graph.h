@@ -9,7 +9,7 @@
     typedef struct edge_ EDGE;
 
     GRAPH* myGraph(int); //feita não revisada
-    void addEdge(GRAPH*, int, int, int);
+    void addEdge(GRAPH*, int, int, int); //feita não revisada
     bool existEdge(GRAPH*, int, int); //feita não revisada
     int* neighbors(GRAPH*, int); //feita não revisada
     void removeEdge(GRAPH*, int, int);

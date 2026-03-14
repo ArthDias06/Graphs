@@ -117,8 +117,6 @@ bool existEdge(GRAPH* graph, int vert1, int vert2){
     return false;
 }
 
-
-//Inacabada
 void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
     if(graph == NULL){
         return;
@@ -140,7 +138,8 @@ void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
         return;
     }
     graph->knots[vert1].edges[numEdge-1].value = edge;
-    grapg->knots[vert1].edges[numEdge-1].knot = graph->knots[vert2];
+    graph->knots[vert1].edges[numEdge-1].knot = &(graph->knots[vert2]);
+
     if(graph->knots[vert2].edges == NULL){
         graph->knots[vert2].edges = malloc(sizeof(EDGE));
         graph->knots[vert1].numEdge++;
@@ -152,8 +151,11 @@ void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
         return;
     }
     graph->knots[vert2].edges[numEdge-1].value = edge;
+    grapg->knots[vert2].edges[numEdge-1].knot = &(graph->knots[vert1]);
 }
 
+
+//Muda tudo se puder ter mais uma aresta a cada 2 vértices
 int* neighbors(GRAPH* graph, int vert){
     if(graph == NULL){
         return NULL;
