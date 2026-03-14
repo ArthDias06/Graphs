@@ -117,6 +117,8 @@ bool existEdge(GRAPH* graph, int vert1, int vert2){
     return false;
 }
 
+
+//Inacabada
 void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
     if(graph == NULL){
         return;
@@ -125,6 +127,31 @@ void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
     /*if(graph->matrix[vert1][vert2] > -1){
         return;
     }*/
+    graph->matrix[vert1][vert2]++;
+    graph->matrix[vert2][vert1]++;
+    if(graph->knots[vert1].edges == NULL){
+        graph->knots[vert1].edges = malloc(sizeof(EDGE));
+        graph->knots[vert1].numEdge++;
+    }
+    else{
+        realloc(graph->knots[vert1].edges, sizeof(EDGE)*(++(graph->knots[vert1].numEdge)));
+    }
+    if(graph->knots[vert1].edges == NULL){
+        return;
+    }
+    graph->knots[vert1].edges[numEdge-1].value = edge;
+    grapg->knots[vert1].edges[numEdge-1].knot = graph->knots[vert2];
+    if(graph->knots[vert2].edges == NULL){
+        graph->knots[vert2].edges = malloc(sizeof(EDGE));
+        graph->knots[vert1].numEdge++;
+    }
+    else{
+        realloc(graph->knots[vert2].edges, sizeof(EDGE)*(++(graph->knots[vert2].numEdge)));
+    }
+    if(graph->knots[vert2].edges == NULL){
+        return;
+    }
+    graph->knots[vert2].edges[numEdge-1].value = edge;
 }
 
 int* neighbors(GRAPH* graph, int vert){
