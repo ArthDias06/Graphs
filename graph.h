@@ -12,10 +12,9 @@
     void addEdge(GRAPH*, int, int, int); //feita não revisada
     bool existEdge(GRAPH*, int, int); //feita não revisada
     int* neighbors(GRAPH*, int); //feita não revisada
-    void removeEdge(GRAPH*, int, int);
-    void printInfo(GRAPH*);
-    void deleteGraph(GRAPH**);
+    void removeEdge(GRAPH*, int, int);//feita não revisada
+    void printInfo(GRAPH*); //feita não revisada
+    void deleteGraph(GRAPH**); //feita não revisada
     int* maxNeighbors(GRAPH*, int);
-    void adjacencyMatrix(GRAPH*); //feita 2x não revisadas
+    void adjacencyMatrix(GRAPH*); //feita não revisadas
 #endif
-

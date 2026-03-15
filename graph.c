@@ -3,23 +3,9 @@
 //A matriz começa como -1, quando colocar um uma aresta ela cresce em um? Então fica com 0 quando dois vértices estiverem ligados?
 
 #include graph.h
-
-struct knot_{
-    int vertice;
-    EDGE* edges;
-    int numEdge;
-};
-
-struct edge_{
-    int value;
-    KNOT* knot;
-};
-
 struct graph_{
     int** matrix; //Matriz de adjacência
-    //Possso ter nós não conectados a nenhum outro vértice
-    KNOT* knots;
-    int verticeQuant;
+    int numVert;
 };
 
 GRAPH* myGraph(int N){
@@ -28,22 +14,14 @@ GRAPH* myGraph(int N){
         printf("Erro ao criar grafo!");
         return NULL;
     }
+    graph->numVert = N;
     graph->matrix = malloc(sizeof(int*) * N);
     if(graph->matrix == NULL){
         free(graph);
         graph = NULL;
         return NULL;
     }
-    graph->knots = malloc(sizeof(KNOT)*N);
-    if(graph->knots == NULL){
-        free(graph->matrix);
-        graph->matrix = NULL;
-        free(graph);
-        graph = NULL;
-        return NULL;
-    }
-    int i;
-    for(i = 0; i < N; i++){
+    for(int i = 0; i < N; i++){
         graph->matrix[i] = malloc(sizeof(int) * N);
         if(graph->matrix[i] == NULL){
             for(int j = 0; j<i; j++){
@@ -52,8 +30,6 @@ GRAPH* myGraph(int N){
             }
             free(graph->matrix);
             graph->matrix = NULL;
-            free(graph->knots);
-            graph->knots = NULL;
             free(graph);
             graph = NULL;
             return NULL;
@@ -61,22 +37,18 @@ GRAPH* myGraph(int N){
         for(int j = 0; j < N; j++){
             graph->matrix[i][j] = -1;
         }
-        graph->knots[i].vertice = i+1;
-        graph->knots[i].edges = NULL;
-        graph->knots[i].numEdge = 0;
     }
-    graph->verticeQuant = i;
     return graph;
 }
 
-/*int** adjacencyMatrix(GRAPH* graph){
+int** adjacencyMatrix(GRAPH* graph){
     if(graph == NULL){
         return NULL;
     }
     return graph->matrix;
-}*/
+}
 
-void adjacencyMatrix(GRAPH* graph){
+void printInfo(GRAPH* graph){
     if(graph == NULL){
         return 0;
     }
@@ -111,58 +83,73 @@ bool existEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL){
         return false;
     }
-    if(graph->matrix[vert1][vert2] > -1){
+    if(graph->matrix[vert1][vert2] != -1){
         return true;
     }
     return false;
 }
 
-void addEdge(GRAPH* graph, int edge, int vert1, int vert2){
+void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
+    if(graph == NULL){
+        return;
+    }
+    if(edge <= 0){
+        printf("Aresta com valor inválido!");
+        return;
+    }
+    //Verifica se já tem a aresta
+    if(existEdge(graph, vert1, vert2)){
+        printf("resta já existente!");
+        return;
+    }
+    graph->matrix[vert1][vert2] = edge;
+    graph->matrix[vert2][vert1] = edge;
+}
+
+void removeEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL){
         return;
     }
     //Verifica se já tem a aresta
-    /*if(graph->matrix[vert1][vert2] > -1){
-        return;
-    }*/
-    graph->matrix[vert1][vert2]++;
-    graph->matrix[vert2][vert1]++;
-    if(graph->knots[vert1].edges == NULL){
-        graph->knots[vert1].edges = malloc(sizeof(EDGE));
-        graph->knots[vert1].numEdge++;
-    }
-    else{
-        realloc(graph->knots[vert1].edges, sizeof(EDGE)*(++(graph->knots[vert1].numEdge)));
-    }
-    if(graph->knots[vert1].edges == NULL){
+    if(!existEdge(graph, vert1, vert2)){
+        printf("Aresta não existente!");
         return;
     }
-    graph->knots[vert1].edges[numEdge-1].value = edge;
-    graph->knots[vert1].edges[numEdge-1].knot = &(graph->knots[vert2]);
-
-    if(graph->knots[vert2].edges == NULL){
-        graph->knots[vert2].edges = malloc(sizeof(EDGE));
-        graph->knots[vert1].numEdge++;
-    }
-    else{
-        realloc(graph->knots[vert2].edges, sizeof(EDGE)*(++(graph->knots[vert2].numEdge)));
-    }
-    if(graph->knots[vert2].edges == NULL){
-        return;
-    }
-    graph->knots[vert2].edges[numEdge-1].value = edge;
-    grapg->knots[vert2].edges[numEdge-1].knot = &(graph->knots[vert1]);
+    graph->matrix[vert1][vert2] = -1;
+    graph->matrix[vert2][vert1] = -1;
 }
 
-
-//Muda tudo se puder ter mais uma aresta a cada 2 vértices
 int* neighbors(GRAPH* graph, int vert){
     if(graph == NULL){
         return NULL;
     }
-    int* neigh = malloc(sizeof(int) * graph->knots[vert].numEdge);
-    for(int i = 0; i < graph->knots[vert].numEdge; i++){
-        neigh[i] = graph->knots[vert].edges[i].knot->vertice;
+    int cont=0;
+    int* neigh = malloc(sizeof(int)*graph->numVert);
+    if(neigh == NULL){
+        return NULL;
     }
+    for(int i = 0; i < graph->numVert; i++){
+        if(vert == i)
+            continue;
+        if(existEdge(graph, vert, i)){
+            neigh[cont] = i;
+            cont++;
+        }
+    }
+    realloc(neigh, sizeof(int)*(cont-1));
     return neigh;
+}
+
+void deleteGraph(GRAPH** graph){
+    if(graph==NULL){
+        return;
+    }
+    for(int i = 0; i < graph->numVert; i++)[
+        free((*graph)->matrix[i]);
+        (*graph)->matrix[i] = NULL;
+    ]
+    free((*graph)->matrix);
+    (*graph)->matrix = NULL;
+    free(*graph);
+    *graph = NULL;
 }
