@@ -1,11 +1,7 @@
-//Perguntas: dois vértices podem ter mais de uma aresta entre si?
-//retornar a matriz é retornar a matrix na main ou prinatr ela para o usuário?
-//A matriz começa como -1, quando colocar um uma aresta ela cresce em um? Então fica com 0 quando dois vértices estiverem ligados?
-
 #include graph.h
 struct graph_{
     int** matrix; //Matriz de adjacência
-    int numVert;
+    int numVert; //Quantidade de vértices do grafo
 };
 
 GRAPH* myGraph(int N){
@@ -13,6 +9,9 @@ GRAPH* myGraph(int N){
     if(graph == NULL){
         printf("Erro ao criar grafo!");
         return NULL;
+    }
+    if(N < 1){
+        printf("Grafo com número inválido de vértices!");
     }
     graph->numVert = N;
     graph->matrix = malloc(sizeof(int*) * N);
@@ -34,6 +33,7 @@ GRAPH* myGraph(int N){
             graph = NULL;
             return NULL;
         }
+        //Preenche a matriz com -1
         for(int j = 0; j < N; j++){
             graph->matrix[i][j] = -1;
         }
@@ -41,6 +41,7 @@ GRAPH* myGraph(int N){
     return graph;
 }
 
+//Função para retorno da matriz de adjacência para o  usuário
 int** adjacencyMatrix(GRAPH* graph){
     if(graph == NULL){
         return NULL;
@@ -53,10 +54,10 @@ void printInfo(GRAPH* graph){
         return;
     }
     for(int i =0; i< graph->verticeQuant; i++){
-        printf(" \t%d", i);
+        printf(" \t%d", i+1);
     }
     for(int i = 0; i < graph->verticeQuant; i++){
-        printf("%d", i);
+        printf("%d", i+1);
         for(int j = 0; j < graph->verticeQuant; j++){
             printf("\t%d", graph->matrix[i][j]);
         }
@@ -90,12 +91,7 @@ int* maxNeighbors(GRAPH* graph){
             cont++;
         }
     }
-    if(cont == 1){
-        int max2[cont];
-    }
-    else{
-        int max2[cont-1];
-    }
+    int max2[cont];
     for(int i = 0; max[i] != -1; i++){
         max2[i] = max[i];
     }
@@ -138,6 +134,8 @@ void removeEdge(GRAPH* graph, int vert1, int vert2){
         printf("Aresta não existente!");
         return;
     }
+    //Tira 1 de vert1 e vert2 pois como o grafo começa com vértice numerado a partir de 1 e a matriz começa a partir de 0
+    //Para acessar o índice vert1 vert2 correto, precisamos decrementar em 1.
     graph->matrix[vert1-1][vert2-1] = -1;
     graph->matrix[vert2-1][vert1-1] = -1;
 }
