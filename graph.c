@@ -72,19 +72,13 @@ int* maxNeighbors(GRAPH* graph){
     }
     int cont = 1;
     int max[graph->numVert];
-    for(int i = 0; i < graph->numVert; i++){
-        //usei -1, pois todos os vértice podem não ter vizinhos.
-        max[i]  = -1;
-    }
+    max[0] = -1;
     int n;
     for(int i = 0; i < graph->numVert; i++){
         n = neighbors(i+1);
         if(n > max[0]){
             max[0] = i;
             cont = 1;
-            for(int j = 1; max[j] != -1; j++){
-                max[j] = -1;
-            }
         }
         else if(n == max[0]){
             max[cont] = i;
@@ -92,8 +86,8 @@ int* maxNeighbors(GRAPH* graph){
         }
     }
     int max2[cont];
-    for(int i = 0; max[i] != -1; i++){
-        max2[i] = max[i];
+    for(int i = 1; max[i-1] == max[i]; i++){
+        max2[i-1] = max[i-1];
     }
     return max2;
 }
