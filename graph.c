@@ -50,7 +50,7 @@ int** adjacencyMatrix(GRAPH* graph){
 
 void printInfo(GRAPH* graph){
     if(graph == NULL){
-        return 0;
+        return;
     }
     for(int i =0; i< graph->verticeQuant; i++){
         printf(" \t%d", i);
@@ -65,25 +65,48 @@ void printInfo(GRAPH* graph){
 }
 
 //Precisa atualizar para caso haja mais de um vértice como max!
-int maxNeighbors(GRAPH* graph){
+int* maxNeighbors(GRAPH* graph){
     if(graph == NULL){
         return 0;
     }
-    int max = 0;
-    for(int i = 0; i < graph->verticeQuant; i++){
-        for(int j = 0; j < graph->verticeQuant; j++){
-            if(graph->matrix[i][j] > max)
-                max = graph->matrix[i][j];
+    int cont = 1;
+    int max[graph->numVert];
+    for(int i = 0; i < graph->numVert; i++){
+        //usei -1, pois todos os vértice podem não ter vizinhos.
+        max[i]  = -1;
+    }
+    int n;
+    for(int i = 0; i < graph->numVert; i++){
+        n = neighbors(i+1);
+        if(n > max[0]){
+            max[0] = i;
+            cont = 1;
+            for(int j = 1; max[j] != -1; j++){
+                max[j] = -1;
+            }
+        }
+        else if(n == max[0]){
+            max[cont] = i;
+            cont++;
         }
     }
-    return max;
+    if(cont == 1){
+        int max2[cont];
+    }
+    else{
+        int max2[cont-1];
+    }
+    for(int i = 0; max[i] != -1; i++){
+        max2[i] = max[i];
+    }
+    return max2;
 }
 
 bool existEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL){
         return false;
     }
-    if(graph->matrix[vert1][vert2] != -1){
+    if(graph->matrix[vert1-1][vert2-1] != -1){
         return true;
     }
     return false;
@@ -102,8 +125,8 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
         printf("resta já existente!");
         return;
     }
-    graph->matrix[vert1][vert2] = edge;
-    graph->matrix[vert2][vert1] = edge;
+    graph->matrix[vert1-1][vert2-1] = edge;
+    graph->matrix[vert2-1][vert1-1] = edge;
 }
 
 void removeEdge(GRAPH* graph, int vert1, int vert2){
@@ -115,8 +138,8 @@ void removeEdge(GRAPH* graph, int vert1, int vert2){
         printf("Aresta não existente!");
         return;
     }
-    graph->matrix[vert1][vert2] = -1;
-    graph->matrix[vert2][vert1] = -1;
+    graph->matrix[vert1-1][vert2-1] = -1;
+    graph->matrix[vert2-1][vert1-1] = -1;
 }
 
 int* neighbors(GRAPH* graph, int vert){
@@ -124,30 +147,35 @@ int* neighbors(GRAPH* graph, int vert){
         return NULL;
     }
     int cont=0;
-    int* neigh = malloc(sizeof(int)*graph->numVert);
-    if(neigh == NULL){
-        return NULL;
-    }
+    int neigh[graph->numVert];
     for(int i = 0; i < graph->numVert; i++){
         if(vert == i)
             continue;
-        if(existEdge(graph, vert, i)){
+        if(existEdge(graph, vert, i+1)){
             neigh[cont] = i;
             cont++;
         }
     }
-    realloc(neigh, sizeof(int)*(cont-1));
-    return neigh;
+    if(cont == 0){
+        cont++;
+    }
+    int neigh2[cont];
+    //Realloc para estáticos
+    for(int i = 0; i < cont; i++){
+        neigh2[i] = neigh[i];
+    }
+    //neigh deixa de existir ao final
+    return neigh2;
 }
 
 void deleteGraph(GRAPH** graph){
     if(graph==NULL){
         return;
     }
-    for(int i = 0; i < graph->numVert; i++)[
+    for(int i = 0; i < graph->numVert; i++){
         free((*graph)->matrix[i]);
         (*graph)->matrix[i] = NULL;
-    ]
+    }
     free((*graph)->matrix);
     (*graph)->matrix = NULL;
     free(*graph);
