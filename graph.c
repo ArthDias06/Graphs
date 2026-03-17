@@ -1,4 +1,5 @@
-#include graph.h
+#include "graph.h"
+
 struct graph_{
     int** matrix; //Matriz de adjacência
     int numVert; //Quantidade de vértices do grafo
@@ -53,12 +54,12 @@ void printInfo(GRAPH* graph){
     if(graph == NULL){
         return;
     }
-    for(int i =0; i< graph->verticeQuant; i++){
+    for(int i =0; i< graph->numVert; i++){
         printf(" \t%d", i+1);
     }
-    for(int i = 0; i < graph->verticeQuant; i++){
+    for(int i = 0; i < graph->numVert; i++){
         printf("%d", i+1);
-        for(int j = 0; j < graph->verticeQuant; j++){
+        for(int j = 0; j < graph->numVert; j++){
             printf("\t%d", graph->matrix[i][j]);
         }
         printf("\n");
@@ -75,7 +76,7 @@ int* maxNeighbors(GRAPH* graph){
     max[0] = -1;
     int n;
     for(int i = 0; i < graph->numVert; i++){
-        n = neighbors(i+1);
+        n = sizeof(neighbors(graph, i+1))/sizeof(int); 
         if(n > max[0]){
             max[0] = i;
             cont = 1;
@@ -85,7 +86,7 @@ int* maxNeighbors(GRAPH* graph){
             cont++;
         }
     }
-    int max2[cont];
+    int* max2 = malloc(sizeof(int) * cont);
     for(int i = 1; max[i-1] == max[i]; i++){
         max2[i-1] = max[i-1];
     }
@@ -140,6 +141,7 @@ int* neighbors(GRAPH* graph, int vert){
     }
     int cont=0;
     int neigh[graph->numVert];
+    neigh[0] = 0;
     for(int i = 0; i < graph->numVert; i++){
         if(vert == i)
             continue;
@@ -151,7 +153,7 @@ int* neighbors(GRAPH* graph, int vert){
     if(cont == 0){
         cont++;
     }
-    int neigh2[cont];
+    int *neigh2 = malloc(sizeof(int) * cont);
     //Realloc para estáticos
     for(int i = 0; i < cont; i++){
         neigh2[i] = neigh[i];
@@ -164,7 +166,7 @@ void deleteGraph(GRAPH** graph){
     if(graph==NULL){
         return;
     }
-    for(int i = 0; i < graph->numVert; i++){
+    for(int i = 0; i < (*graph)->numVert; i++){
         free((*graph)->matrix[i]);
         (*graph)->matrix[i] = NULL;
     }

@@ -2,7 +2,7 @@
     #define GRAPH_H
     #include<stdio.h>
     #include<stdlib.h>
-    #include<boolean.h>
+    #include<stdbool.h>
 
     typedef struct graph_ GRAPH;
     typedef struct knot_ KNOT;
@@ -15,6 +15,6 @@
     void removeEdge(GRAPH*, int, int);//feita não revisada
     void printInfo(GRAPH*); //feita não revisada
     void deleteGraph(GRAPH**); //feita não revisada
-    int* maxNeighbors(GRAPH*, int); //feita não revisada
-    void adjacencyMatrix(GRAPH*); //feita não revisadas
+    int* maxNeighbors(GRAPH*); //feita não revisada
+    int** adjacencyMatrix(GRAPH*); //feita não revisadas
 #endif
