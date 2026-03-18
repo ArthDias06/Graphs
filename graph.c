@@ -54,43 +54,41 @@ void printInfo(GRAPH* graph){
     if(graph == NULL){
         return;
     }
+    printf("V = [");
     for(int i =0; i< graph->numVert; i++){
-        printf(" \t%d", i+1);
-    }
-    for(int i = 0; i < graph->numVert; i++){
-        printf("%d", i+1);
-        for(int j = 0; j < graph->numVert; j++){
-            printf("\t%d", graph->matrix[i][j]);
+        if(i+1 != graph->numVert){
+            printf("%d, ", i+1);
+        }else{
+            printf("%d]\n", i+1);
         }
-        printf("\n");
+    }
+    printf("E = [");
+    for(int i = 1; i < graph->numVert; i++){
+        for(int j = i; j <= graph->numVert; j++){
+            if(existEdge(graph, i, j) && i != graph->numVert-1){
+                printf("(%d, %d), ", i, j);
+            }
+            else if(existEdge(graph, i, j)){
+                printf("(%d, %d)]", i, j);
+            }
+        }
     }
 }
 
 //Precisa atualizar para caso haja mais de um vértice como max!
-int* maxNeighbors(GRAPH* graph){
+int maxNeighbors(GRAPH* graph){
     if(graph == NULL){
         return 0;
     }
-    int cont = 1;
-    int max[graph->numVert];
-    max[0] = -1;
+    int max = 0;
     int n;
     for(int i = 0; i < graph->numVert; i++){
         n = sizeof(neighbors(graph, i+1))/sizeof(int); 
-        if(n > max[0]){
-            max[0] = i;
-            cont = 1;
-        }
-        else if(n == max[0]){
-            max[cont] = i;
-            cont++;
+        if(n > max){
+            max = i+1;
         }
     }
-    int* max2 = malloc(sizeof(int) * cont);
-    for(int i = 1; max[i-1] == max[i]; i++){
-        max2[i-1] = max[i-1];
-    }
-    return max2;
+    return max;
 }
 
 bool existEdge(GRAPH* graph, int vert1, int vert2){
@@ -109,11 +107,6 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
     }
     if(edge <= 0){
         printf("Aresta com valor inválido!");
-        return;
-    }
-    //Verifica se já tem a aresta
-    if(existEdge(graph, vert1, vert2)){
-        printf("resta já existente!");
         return;
     }
     graph->matrix[vert1-1][vert2-1] = edge;
