@@ -7,8 +7,6 @@ struct graph_{
 
 int* _neighbors_without_print (GRAPH*, int); // FUNÇÃO INTERNA
 
-
-
 GRAPH* myGraph(int N){
     GRAPH* graph = malloc(sizeof(GRAPH));
     if(graph == NULL){

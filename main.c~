@@ -69,8 +69,6 @@ int main(void)
         case 8: // adjacencyMatrix
         	adjacencyMatrix(G);
         	break;
-        case 9:
-        	goto fim_loop;
         default:
             printf("unrecognized option!\n");
     }
