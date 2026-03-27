@@ -139,19 +139,19 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
     graph->matrix[vert2-1][vert1-1] = edge;
 }
 
-void removeEdge(GRAPH* graph, int vert1, int vert2){
+ int removeEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL){
         return;
     }
     //Verifica se já tem a aresta
     if(!existEdge(graph, vert1, vert2)){
-        printf("Aresta não existente!");
-        return;
+        return -1;
     }
     //Tira 1 de vert1 e vert2 pois como o grafo começa com vértice numerado a partir de 1 e a matriz começa a partir de 0
     //Para acessar o índice vert1 vert2 correto, precisamos decrementar em 1.
     graph->matrix[vert1-1][vert2-1] = -1;
     graph->matrix[vert2-1][vert1-1] = -1;
+    return 0;
 }
 
 int* neighbors(GRAPH* graph, int vert){
