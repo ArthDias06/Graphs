@@ -99,13 +99,13 @@ void printInfo(GRAPH* graph){
     int printaVirgula=0; // a vírgula é imprimida antes da aresta. Por isso, quando imprimir a primeira aresta antes não pode imprimir vírgula
     printf("E = [");
     for(int i = 1; i <= graph->numVert; i++){
-        for(int j = i; j <= graph->numVert; j++){
+        for(int j = 1; j <= i; j++){
             if(existEdge(graph, i, j)){
             
             	if(printaVirgula) printf(", ");
             	printaVirgula = 1;
             	
-                printf("(%d, %d)", i, j);
+                printf("(%d, %d)", j, i);
             }
         }
     }
@@ -147,8 +147,8 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
 }
 
  int removeEdge(GRAPH* graph, int vert1, int vert2){
-    if(graph == NULL){
-        return 0;
+    if(graph == NULL || vert1<1 || vert1>graph->numVert || vert1<2 || vert2>graph->numVert){
+        return -1;
     }
     //Verifica se já tem a aresta
     if(!existEdge(graph, vert1, vert2)){
@@ -170,10 +170,9 @@ int* neighbors(GRAPH* graph, int vert){
 		if( (graph->matrix)[vert-1][i-1] != -1) conta_vizinhos++;
 	}
 	
-	int* vizinhos = (int*)malloc( (conta_vizinhos+1) * sizeof(int) );
-	vizinhos[0] = conta_vizinhos;
+	int* vizinhos = (int*)malloc( (conta_vizinhos) * sizeof(int) );
 	
-	int index_array = 1;
+	int index_array = 0;
 	for(int i=1; i <= graph->numVert; i++){
 		if( graph->matrix[vert-1][i-1] != -1){
 			vizinhos[index_array] = i;
@@ -183,12 +182,10 @@ int* neighbors(GRAPH* graph, int vert){
 	
 	// agora printa os vizinhos
 	
-	printf("[");
-	for(int i=1; i<=conta_vizinhos; i++){
+	for(int i=1; i<conta_vizinhos; i++){
 		if(i != 1) printf(", ");
 		printf("%d", vizinhos[i]);
 	}
-	printf("]\n");
 	
 	return vizinhos;
 }
@@ -273,8 +270,10 @@ int main(void)
                 break;
             case 4: // removeEdge
                 scanf("%d %d ", &x, &y);
-                if(removeEdge(G, x, y) == -1)
-                    printf("-1\n");
+                if(removeEdge(G, x, y) == -1){
+                    res = -1;
+                    print_status = 0;
+                }
                 break;
             default:
                 printf("unrecognized option!\n");
