@@ -57,19 +57,37 @@ GRAPH* myGraph(int N){
 
 //Função para retorno da matriz de adjacência para o  usuário
 int** adjacencyMatrix(GRAPH* graph){
-    if(graph == NULL){
+    if(graph == NULL || graph->matrix == NULL){
         return NULL;
     }
+    
+    // Primeiro, precisamos achar os nós desconexos e marcá-los como não printáveis
+    bool* marca = (bool*)malloc(sizeof(bool)*graph->numVert);
+    bool flag = true;
+    for(int i = 0; i < graph->numVert; i++){ // percorre cada linha
+    	for(int j = 0; j < graph->numVert; j++){ // cada item da linha
+    		if(graph->matrix[i][j] != -1) flag = false;
+    		}
+    	marca[i] = flag; // marca o nó como true, se é desconexo
+    	flag = true;
+    }
    
-   // DEBUG!!!
+   printf("Adjacency Matrix:");
     
     for(int i = 0; i < graph->numVert; i++){
-    	for(int j = 0; j < graph->numVert; j++){
-    		printf("%2d ", graph->matrix[i][j]);
-    	}
     	printf("\n");
+    	for(int j = 0; j < graph->numVert; j++){
+    		if(marca[i] || marca[j] == true) continue; // se o vértice está marcado como não printável, pula
+    		
+    		if(graph->matrix[i][j] == -1){
+    			printf("  0 ");
+    		}else{
+    			printf("%3d ", graph->matrix[i][j]);
+    		}
+    	}
     }
     
+    free(marca);
     return graph->matrix; // ISSO QUEBRA O INFORMATION HIDING
 }
 
@@ -147,11 +165,13 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
 }
 
  int removeEdge(GRAPH* graph, int vert1, int vert2){
-    if(graph == NULL || vert1<1 || vert1>graph->numVert || vert1<2 || vert2>graph->numVert){
+    if(graph == NULL || vert1<1 || vert1>graph->numVert || vert2<1 || vert2>graph->numVert){
+    	printf("-1\n");
         return -1;
     }
-    //Verifica se já tem a aresta
-    if(!existEdge(graph, vert1, vert2)){
+    //Verifica se não tem a aresta
+    if(existEdge(graph, vert1, vert2) == 0){
+        printf("-1\n");
         return -1;
     }
     //Tira 1 de vert1 e vert2 pois como o grafo começa com vértice numerado a partir de 1 e a matriz começa a partir de 0
@@ -170,9 +190,10 @@ int* neighbors(GRAPH* graph, int vert){
 		if( (graph->matrix)[vert-1][i-1] != -1) conta_vizinhos++;
 	}
 	
-	int* vizinhos = (int*)malloc( (conta_vizinhos) * sizeof(int) );
+	int* vizinhos = (int*)malloc( (conta_vizinhos+1) * sizeof(int) );
+	vizinhos[0] = conta_vizinhos;
 	
-	int index_array = 0;
+	int index_array = 1;
 	for(int i=1; i <= graph->numVert; i++){
 		if( graph->matrix[vert-1][i-1] != -1){
 			vizinhos[index_array] = i;
@@ -182,10 +203,10 @@ int* neighbors(GRAPH* graph, int vert){
 	
 	// agora printa os vizinhos
 	
-	for(int i=1; i<conta_vizinhos; i++){
-		if(i != 1) printf(", ");
-		printf("%d", vizinhos[i]);
+	for(int i=1; i<=conta_vizinhos; i++){
+		printf("%d ", vizinhos[i]);
 	}
+	printf("\n");
 	
 	return vizinhos;
 }
@@ -227,65 +248,81 @@ void deleteGraph(GRAPH** graph){
     *graph = NULL;
 }
 
+
+
+
+
+// MAIN COPIADA DO RUNCODES:
+
+
+
+
+
+
 int main(void)
 {
     int option;
     int N, x, y, w;
     int res;
-    bool print_status = 1;
+    int print_status = 1;
+
     GRAPH *G;
 
-	/*
-    printf("[0] myGraph\n");
-    printf("[1] addEdge\n");
-    printf("[2] existEdge\n");
-    printf("[3] neighbors\n");
-    printf("[4] removeEdge\n");
-    printf("[5] printInfo\n");
-    printf("[6] deleteGraph\n");
-    printf("[7] maxNeighbors\n");
-    printf("[8] adjacencyMatrix\n");
-    printf("[9] sair\n");
-    */
-    scanf("%d ", &option);
-    do{
-        switch (option)
-        {
-            case 0:
-                scanf("%d ", &N);
-                G = myGraph(N);
-                break;
-            case 1: // add_edge
-                scanf("%d %d %d ", &x, &y, &w);
-                addEdge(G, x, y, w);
-                break;
-            case 2: // existEdge
-                scanf("%d %d ", &x, &y);
-                res = existEdge(G, x, y);
-                print_status = 0;
-                break;
-            case 3: // neighbors
-                scanf("%d ", &x);
-                free(neighbors(G, x));
-                break;
-            case 4: // removeEdge
-                scanf("%d %d ", &x, &y);
-                if(removeEdge(G, x, y) == -1){
-                    res = -1;
-                    print_status = 0;
-                }
-                break;
-            default:
-                printf("unrecognized option!\n");
-        }
-        scanf("%d ", &option);
-    }while(option != -1);
+    scanf(" %d", &option);
 
-    if(option == -1){
-        if(print_status)
-            printInfo(G);
-        else
-            printf("%d\n", res);
+    while (option != -1)
+    {
+        switch (option){
+        case 0:
+            scanf(" %d", &N);
+            G = myGraph(N);
+            break;
+        case 1:
+            // adicionamos
+            scanf(" %d %d %d", &x, &y, &w);
+            addEdge(G, x, y, w);
+            break;
+        case 2:
+            // get
+            scanf(" %d %d", &x, &y);
+            res = existEdge(G, x, y);
+            print_status = 0;
+            break;
+        case 3:
+        	// neighbors
+        	scanf(" %d", &x);
+        	free(neighbors(G, x)); // dá free no retorno para não vazar memória
+        	print_status = -1;
+        	break;
+        case 4:
+        	 // remove
+            scanf(" %d %d", &x, &y);
+            if(removeEdge(G, x, y) == -1){
+            	print_status = -1;
+            }
+            break;
+        case 5:
+        	// matriz
+        	adjacencyMatrix(G);
+        	print_status = -1;
+        	break;
+        default:
+            printf("unrecognized option %d!\n", option);
+        }
+        scanf(" %d", &option);
+    }
+
+    if (option == -1){
+        switch(print_status){
+        	case -1:
+        		break;
+        	case 0:
+            	printf("%d\n", res);
+            	break;
+            case 1:
+        		printInfo(G);
+        		break;
+     	   }
     }
 
     deleteGraph(&G);
