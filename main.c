@@ -1,6 +1,6 @@
-//Arthur de Castro Dias - 1685302
-//Pedro Tiago Biffi - 16
-//Gabriel Carraro Salzedas - 16
+//Arthur de Castro Dias - 16855302
+//Pedro Tiago Biffi - 1627777
+//Gabriel Carraro Salzedas - 1627905
 //Guilherme Cavalcanti de Santana - 15456556
 
 #include<stdio.h>
@@ -306,6 +306,12 @@ int main(void)
         	adjacencyMatrix(G);
         	print_status = -1;
         	break;
+        case 6:
+            //Max neighbors
+            res = maxNeighbors(G);
+            print_status = 0;
+            printf("max vertex: ");
+            break;
         default:
             printf("unrecognized option %d!\n", option);
         }
