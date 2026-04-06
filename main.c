@@ -243,6 +243,8 @@ int main(void)
     int N, vertex1, vertex2, weight;
     int res;
     int print_status = 1;
+    int** matrix = NULL;
+    int* neigh = NULL;
 
     GRAPH *G;
 
@@ -270,8 +272,7 @@ int main(void)
         case 3:
         	// neighbors
         	scanf(" %d", &vertex1);
-        	printInfo(G, neighbors(G, vertex1), NULL); // dá free no retorno para não vazar memória
-        	print_status = -1;
+        	neigh = neighbors(G, vertex1);
         	break;
         case 4:
         	 // remove
@@ -283,8 +284,7 @@ int main(void)
             break;
         case 5:
         	// matriz
-        	printInfo(G, NULL, adjacencyMatrix(G));
-        	print_status = -1;
+        	matrix = adjacencyMatrix(G);
         	break;
         case 6:
             //Max neighbors
@@ -300,13 +300,11 @@ int main(void)
 
     if (option == -1){
         switch(print_status){
-        	case -1:
-        		break;
         	case 0:
             	printf("%d\n", res);
             	break;
             case 1:
-        		printInfo(G, NULL, NULL);
+        		printInfo(G, neigh, matrix);
         		break;
      	   }
     }
