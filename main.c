@@ -5,38 +5,44 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-#include<stdbool.h>
 
 typedef struct graph_{
     int** matrix; //Matriz de adjacência
     int numVert; //Quantidade de vértices do grafo
 }GRAPH;
 
-int* neighbors(GRAPH*, int); // FUNÇÃO INTERNA
+int* neighbors(GRAPH*, int); //Declaração do protótipo de neighbors
 
 
-
+//Função para criação do grafo
 GRAPH* myGraph(int N){
     GRAPH* graph = malloc(sizeof(GRAPH));
+    //Verificação se houve sucesso na alocação
     if(graph == NULL){
         printf("Erro ao alocar memória para o grafo!\n");
         return NULL;
     }
+    //Verificação se o número de vértices enviado é válido
     if(N < 1){
         printf("Grafo com número inválido de vértices!\n");
+        free(graph);
+        graph = NULL;
         return NULL;
     }
     graph->numVert = N;
     graph->matrix = malloc(sizeof(int*) * N);
+    //Se a matrix não for alocada, libera a memória de graph
     if(graph->matrix == NULL){
         free(graph);
         graph = NULL;
         printf("Erro ao alocar matriz!\n");
         return NULL;
     }
+    //Alocação das linhas da matriz
     for(int i = 0; i < N; i++){
         graph->matrix[i] = malloc(sizeof(int) * N);
         if(graph->matrix[i] == NULL){
+            //Se a linha der problema na alocação libera todas as anteriores
             for(int j = 0; j<i; j++){
                 free(graph->matrix[j]);
                 graph->matrix = NULL;
@@ -52,6 +58,7 @@ GRAPH* myGraph(int N){
             graph->matrix[i][j] = -1;
         }
     }
+    //Retorna o ponteiro para o grafo
     return graph;
 }
 
@@ -63,21 +70,27 @@ int** adjacencyMatrix(GRAPH* graph){
     return graph->matrix;
 }
 
+//Função para verificar existência de uma certa aresta
 int existEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL){
         return 0;
     }
-    if(graph->matrix[vert1-1][vert2-1] != -1){
+    //Verifica se a posiçção na matriz de acordo com os vértices enviados é diferented e -1
+    if(graph->matrix[vert1-1][vert2-1] != -1){ //Retira 1 do valor enviado, pois os vértices são de 1 - N, mas a matriz é de 0 - N-1
         return 1;
     }
     return 0;
 }
 
+
+//Função para printar o vetor de vizinhos, a matriz de adjacência ou as informações do gráfico
 void printInfo(GRAPH* graph, int* vetNeighbors, int** adjacencyMatrix){
     if(graph == NULL){
         return;
     }
+    //Se o ponteiro do vetor de vizinhos não for nulo ele printa o vetor
     if(vetNeighbors != NULL){
+        //A posição 0 do vetor guarda o tamanho do vetor
         for(int i = 1; i <= vetNeighbors[0]; i++){
             printf("%d ", vetNeighbors[i]);
         }
@@ -85,51 +98,44 @@ void printInfo(GRAPH* graph, int* vetNeighbors, int** adjacencyMatrix){
         free(vetNeighbors);
         return;
     }
+    //Se o ponteiro da matriz de adjacência não for nulo ele printa a matriz
     if(adjacencyMatrix != NULL){
-        // Primeiro, precisamos achar os nós desconexos e marcá-los como não printáveis
-        /*bool* marca = (bool*)malloc(sizeof(bool)*graph->numVert);
-        bool flag = true;
-        for(int i = 0; i < graph->numVert; i++){ // percorre cada linha
-            for(int j = 0; j < graph->numVert; j++){ // cada item da linha
-                if(graph->matrix[i][j] != -1) flag = false;
-                }
-            marca[i] = flag; // marca o nó como true, se é desconexo
-            flag = true;
-        }*/
-    
         printf("Adjacency Matrix:");
-        
+
         for(int i = 0; i < graph->numVert; i++){
             printf("\n");
             for(int j = 0; j < graph->numVert; j++){
-                //if(marca[i] || marca[j] == true) continue; // se o vértice está marcado como não printável, pula
-                
+                //Todas as posições preenchidas com -1 são apresentadas como 0 para o usuário
                 if(adjacencyMatrix[i][j] == -1){
                     printf("  0 ");
                 }else{
+                    //Mostra para o usuário com uma identação de 3 espaços
                     printf("%3d ", adjacencyMatrix[i][j]);
                 }
             }
         }
         
-        //free(marca);
         return;
     }
+    //Caso ambos ponteiros sejam nulos, ele printa as informações dos vértices e arestas
     printf("V = [");
+    //Print dos vértices do grafo
     for(int i =0; i< graph->numVert; i++){
         if(i+1 != graph->numVert){
             printf("%d, ", i+1);
+        //Se ele chegar no final ele não printa com a vírgula
         }else{
             printf("%d]\n", i+1);
         }
     }
-    
+    //Print das arestas
     int printaVirgula=0; // a vírgula é imprimida antes da aresta. Por isso, quando imprimir a primeira aresta antes não pode imprimir vírgula
     printf("E = [");
     for(int i = 1; i <= graph->numVert; i++){
         for(int j = 1; j <= i; j++){
+            //Verifica se a aresta existe na posição procurada
             if(existEdge(graph, i, j)){
-            
+
             	if(printaVirgula) printf(", ");
             	printaVirgula = 1;
             	
@@ -140,6 +146,7 @@ void printInfo(GRAPH* graph, int* vetNeighbors, int** adjacencyMatrix){
     printf("]\n");
 }
 
+//Função para retornar o vértice com maior número de vizinhos
 int maxNeighbors(GRAPH* graph){
     if(graph == NULL){
         return 0;
@@ -149,8 +156,11 @@ int maxNeighbors(GRAPH* graph){
     int max_neigh = 0;
     int* neighbors_temp;
     for(int i = 1; i <= graph->numVert; i++){
+        //pega o vetor de vizinhos de acordo com o  vértice
         neighbors_temp = neighbors(graph, i);
-        if(neighbors_temp[0] > max_neigh){ // compara a quantidade de vizinhos desse nó
+
+        if(neighbors_temp[0] > max_neigh){ // compara a quantidade de vizinhos desse nó com o maior encontrado até então
+            //Se for maior, atualiza os valores
         	max_neigh = neighbors_temp[0];
         	max_vert = i;
         }
@@ -159,21 +169,28 @@ int maxNeighbors(GRAPH* graph){
     return max_vert;
 }
 
+//Função para adicionar aresta
 void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
     if(graph == NULL){
         return;
     }
+    //Se a aresta tiver um peso inválido dá erro
     if(edge <= 0){
         printf("Aresta com valor inválido!\n");
         return;
     }
+    //Se os vértices passados estiverem fora do intervalo estipulado, ele dá erro
     if(vert1 < 1 || vert2 < 1 || vert1 > graph->numVert || vert2 > graph->numVert){
     	printf("Vértices inválidos!\n");
+        return;
     }
+    //Coloca o valor da aresta na matriz
     graph->matrix[vert1-1][vert2-1] = edge;
     graph->matrix[vert2-1][vert1-1] = edge;
 }
 
+
+//Função para remover aresta
  int removeEdge(GRAPH* graph, int vert1, int vert2){
     if(graph == NULL || vert1<1 || vert1>graph->numVert || vert2<1 || vert2>graph->numVert){
         return -1;
@@ -182,25 +199,28 @@ void addEdge(GRAPH* graph, int vert1, int vert2, int edge){
     if(existEdge(graph, vert1, vert2) == 0){
         return -1;
     }
-    //Tira 1 de vert1 e vert2 pois como o grafo começa com vértice numerado a partir de 1 e a matriz começa a partir de 0
-    //Para acessar o índice vert1 vert2 correto, precisamos decrementar em 1.
+    //Troca o valor da posição por -1
     graph->matrix[vert1-1][vert2-1] = -1;
     graph->matrix[vert2-1][vert1-1] = -1;
     return 0;
 }
 
-int* neighbors(GRAPH* graph, int vert){ // FUNÇÃO INTERNA
+//Função para cálculo dos vizinhos de um nó
+int* neighbors(GRAPH* graph, int vert){
     if(graph == NULL || graph->matrix == NULL) return NULL;
 	if(vert < 1 || vert > graph->numVert) return NULL;
 	
 	int conta_vizinhos = 0;
+    //Só percorre a linha da matriz de acordo com o vértice
 	for(int i=1; i <= graph->numVert; i++){
+        //Se a posição analisada for diferente de -1, ele tem um vizinho
 		if( (graph->matrix)[vert-1][i-1] != -1) conta_vizinhos++;
 	}
-	
+	//Alocação do vetor de vizinhos
 	int* vizinhos = (int*)malloc( (conta_vizinhos+1) * sizeof(int) );
+    //A primeira posição do vetor é reservada para o tamanho dele
 	vizinhos[0] = conta_vizinhos;
-	
+	//Percorre novamente a linha para ver os vizinhos e armazenar no vetor
 	int index_array = 1;
 	for(int i=1; i <= graph->numVert; i++){
 		if( (graph->matrix)[vert-1][i-1] != -1){
@@ -212,16 +232,21 @@ int* neighbors(GRAPH* graph, int vert){ // FUNÇÃO INTERNA
 	return vizinhos;
 }
 
+//Função para apagar o grafo
+//Envia um ponteiro para ponteiro para poder apagar a posição de mamória correta
 void deleteGraph(GRAPH** graph){
     if(graph==NULL){
         return;
     }
+    //Desaloca cada linha da matriz
     for(int i = 0; i < (*graph)->numVert; i++){
         free((*graph)->matrix[i]);
         (*graph)->matrix[i] = NULL;
     }
+    //Desaloca a matriz
     free((*graph)->matrix);
     (*graph)->matrix = NULL;
+    //Desaloca o grafo
     free(*graph);
     *graph = NULL;
 }
@@ -230,7 +255,6 @@ void deleteGraph(GRAPH** graph){
 
 
 
-// MAIN COPIADA DO RUNCODES:
 
 
 
@@ -264,7 +288,7 @@ int main(void)
             addEdge(G, vertex1, vertex2, weight);
             break;
         case 2:
-            // get
+            // Verificação da existência
             scanf(" %d %d", &vertex1, &vertex2);
             res = existEdge(G, vertex1, vertex2);
             print_status = 0;
@@ -298,6 +322,7 @@ int main(void)
         scanf(" %d", &option);
     }
 
+    //Print final das informações pedidas
     if (option == -1){
         switch(print_status){
         	case 0:
@@ -309,6 +334,7 @@ int main(void)
      	   }
     }
 
+    //Deleção do grafo 
     deleteGraph(&G);
     return 0;
 }
